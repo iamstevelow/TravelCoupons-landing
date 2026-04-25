@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TravelCoupons — Exclusive Deals for Travelers</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cream: '#FDFBF7',
+                        espresso: '#1A1A1A',
+                        warmgray: '#6B6B6B',
+                        sage: '#2D5A4A',
+                        'sage-light': '#E8F0ED',
+                        gold: '#D4A853',
+                    },
+                    fontFamily: {
+                        serif: ['DM Serif Display', 'serif'],
+                        sans: ['DM Sans', 'system-ui', 'sans-serif'],
+                    },
+                    borderRadius: {
+                        '4xl': '2rem',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background-color: #FDFBF7;
+            color: #1A1A1A;
+            overflow-x: hidden;
+        }
+
+        ::selection {
+            background-color: #2D5A4A;
+            color: white;
+        }
+
+        .noise-overlay {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 100;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px) blur(8px);
+            transition: all 1s cubic-bezier(0.32, 0.72, 0, 1);
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0) blur(0);
+        }
+
+        .float-nav {
+            transition: all 0.6s cubic-bezier(0.32, 0.72, 0, 1);
+        }
+
+        .nav-link {
+            transition: all 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+        }
+
+        .nav-link:hover {
+            color: #2D5A4A;
+        }
+
+        .btn-primary {
+            transition: all 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+        }
+
+        .btn-primary:hover {
+            transform: scale(0.97);
+        }
+
+        .btn-primary:hover .btn-icon {
+            transform: translate(2px, -2px) scale(1.1);
+        }
+
+        .card-hover {
+            transition: all 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+        }
+
+        .card-hover:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-icon {
+            transition: all 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+        }
+
+        .feature-card:hover .feature-icon {
+            transform: scale(1.1) rotate(-5deg);
+        }
+
+        .hamburger-line {
+            transition: all 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+        }
+
+        .menu-open .hamburger-line:nth-child(1) {
+            transform: translateY(8px) rotate(45deg);
+        }
+
+        .menu-open .hamburger-line:nth-child(2) {
+            opacity: 0;
+            transform: translateX(-10px);
+        }
+
+        .menu-open .hamburger-line:nth-child(3) {
+            transform: translateY(-8px) rotate(-45deg);
+        }
+
+        .menu-item {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+        }
+
+        .menu-open .menu-item {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .menu-open .menu-item:nth-child(1) { transition-delay: 0.1s; }
+        .menu-open .menu-item:nth-child(2) { transition-delay: 0.15s; }
+        .menu-open .menu-item:nth-child(3) { transition-delay: 0.2s; }
+        .menu-open .menu-item:nth-child(4) { transition-delay: 0.25s; }
+        .menu-open .menu-item:nth-child(5) { transition-delay: 0.3s; }
+
+        .discount-badge {
+            animation: pulse-glow 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(212, 168, 83, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(212, 168, 83, 0.6); }
+        }
+
+        .parallax-img {
+            transition: transform 0.1s linear;
+        }
+    </style>
+</head>
+<body>
+    <div class="noise-overlay"></div>
+
+    <nav class="fixed top-0 left-0 right-0 z-50 px-6 py-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="float-nav bg-white/80 backdrop-blur-xl rounded-full px-6 py-4 flex items-center justify-between shadow-lg shadow-black/5 ring-1 ring-black/5">
+                <a href="#" class="flex items-center gap-2">
+                    <svg class="w-8 h-8 text-sage" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M16 4L4 12l12 8 12-8-12-8z"/>
+                        <path d="M4 20l12 8 12-8"/>
+                        <path d="M4 16l12 8 12-8"/>
+                    </svg>
+                    <span class="font-serif text-xl text-espresso">TravelCoupons</span>
+                </a>
+
+                <div class="hidden md:flex items-center gap-8">
+                    <a href="#deals" class="nav-link text-warmgray text-sm font-medium">Deals</a>
+                    <a href="#how-it-works" class="nav-link text-warmgray text-sm font-medium">How It Works</a>
+                    <a href="#testimonials" class="nav-link text-warmgray text-sm font-medium">Reviews</a>
+                </div>
+
+                <button class="btn-primary hidden md:flex items-center gap-2 bg-sage text-white px-5 py-2.5 rounded-full text-sm font-medium">
+                    Get Coupons
+                    <span class="btn-icon w-5 h-5 flex items-center justify-center transition-transform duration-300">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </span>
+                </button>
+
+                <button id="menuBtn" class="md:hidden w-10 h-10 flex flex-col items-center justify-center gap-1.5">
+                    <span class="hamburger-line w-5 h-0.5 bg-espresso rounded-full"></span>
+                    <span class="hamburger-line w-5 h-0.5 bg-espresso rounded-full"></span>
+                    <span class="hamburger-line w-5 h-0.5 bg-espresso rounded-full"></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div id="mobileMenu" class="fixed inset-0 z-40 bg-cream/95 backdrop-blur-3xl flex items-center justify-center opacity-0 pointer-events-none transition-all duration-500">
+        <div class="text-center space-y-6">
+            <a href="#deals" class="menu-item block font-serif text-4xl text-espresso hover:text-sage transition-colors">Deals</a>
+            <a href="#how-it-works" class="menu-item block font-serif text-4xl text-espresso hover:text-sage transition-colors">How It Works</a>
+            <a href="#testimonials" class="menu-item block font-serif text-4xl text-espresso hover:text-sage transition-colors">Reviews</a>
+            <a href="#deals" class="menu-item inline-flex items-center gap-2 bg-sage text-white px-8 py-4 rounded-full text-lg font-medium mt-8">
+                Get Coupons
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </div>
+    </div>
+
+    <section class="min-h-[100dvh] flex items-center px-6 py-32">
+        <div class="max-w-7xl mx-auto w-full">
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
+                <div class="reveal">
+                    <span class="inline-block bg-sage-light text-sage text-xs font-medium uppercase tracking-[0.2em] px-4 py-2 rounded-full mb-8">
+                        Exclusive Travel Deals
+                    </span>
+                    <h1 class="font-serif text-5xl md:text-7xl text-espresso leading-[1.1] mb-6">
+                        Save Big on<br>Every Journey
+                    </h1>
+                    <p class="text-warmgray text-lg md:text-xl leading-relaxed mb-10 max-w-lg">
+                        Access exclusive coupons for flights, hotels, and experiences. Travel more, spend less — from weekend getaways to around-the-world adventures.
+                    </p>
+                    <div class="flex flex-wrap gap-4">
+                        <button class="btn-primary inline-flex items-center gap-3 bg-sage text-white px-8 py-4 rounded-full text-base font-medium">
+                            Browse Deals
+                            <span class="btn-icon w-5 h-5 flex items-center justify-center transition-transform duration-300">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                                </svg>
+                            </span>
+                        </button>
+                        <button class="inline-flex items-center gap-2 text-sage font-medium px-6 py-4 rounded-full hover:bg-sage-light transition-colors">
+                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="M12 8v4l3 3"/>
+                            </svg>
+                            How It Works
+                        </button>
+                    </div>
+                    <div class="flex items-center gap-8 mt-12 pt-8 border-t border-black/5">
+                        <div>
+                            <p class="font-serif text-3xl text-espresso">50K+</p>
+                            <p class="text-warmgray text-sm">Happy Travelers</p>
+                        </div>
+                        <div class="w-px h-12 bg-black/10"></div>
+                        <div>
+                            <p class="font-serif text-3xl text-espresso">$2M+</p>
+                            <p class="text-warmgray text-sm">Saved by Users</p>
+                        </div>
+                        <div class="w-px h-12 bg-black/10"></div>
+                        <div>
+                            <p class="font-serif text-3xl text-espresso">500+</p>
+                            <p class="text-warmgray text-sm">Active Coupons</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="reveal relative" style="transition-delay: 0.2s;">
+                    <div class="relative">
+                        <div class="absolute -top-8 -left-8 w-full h-full bg-sage-light rounded-4xl -z-10"></div>
+                        <img
+                            src="https://images.unsplash.com/photo-1506929562872-bb421503ef21?w=800&q=80"
+                            alt="Tropical beach destination"
+                            class="w-full aspect-[4/3] object-cover rounded-4xl shadow-2xl"
+                        >
+                        <div class="absolute -bottom-6 -right-6 bg-white rounded-3xl p-6 shadow-xl ring-1 ring-black/5">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-gold/20 rounded-full flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-gold" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-espresso">4.9 Rating</p>
+                                    <p class="text-warmgray text-sm">12,847 reviews</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="deals" class="px-6 py-32">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-20 reveal">
+                <span class="inline-block bg-sage-light text-sage text-xs font-medium uppercase tracking-[0.2em] px-4 py-2 rounded-full mb-6">
+                    Featured Deals
+                </span>
+                <h2 class="font-serif text-4xl md:text-5xl text-espresso">
+                    Popular Coupons
+                </h2>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="reveal card-hover bg-white rounded-4xl overflow-hidden shadow-lg shadow-black/5 ring-1 ring-black/5">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1540541338287-41700207dee6?w=600&q=80" alt="Hotel pool" class="w-full aspect-[16/10] object-cover">
+                        <div class="discount-badge absolute top-4 right-4 bg-gold text-white px-4 py-2 rounded-full font-semibold text-sm">
+                            40% OFF
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center gap-2 text-sage text-sm mb-3">
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1118 0z"/>
+                                <circle cx="12" cy="10" r="3"/>
+                            </svg>
+                            Maldives
+                        </div>
+                        <h3 class="font-serif text-xl text-espresso mb-2">Paradise Island Resort</h3>
+                        <p class="text-warmgray text-sm mb-4">Up to 40% off on beachfront villas and water bungalows</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-warmgray bg-cream px-3 py-1 rounded-full">Valid till Dec 2026</span>
+                            <button class="text-sage font-medium text-sm flex items-center gap-1 hover:gap-2 transition-all">
+                                Get Deal
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="reveal card-hover bg-white rounded-4xl overflow-hidden shadow-lg shadow-black/5 ring-1 ring-black/5" style="transition-delay: 0.1s;">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1436491865332-7a61a109db05?w=600&q=80" alt="Airport terminal" class="w-full aspect-[16/10] object-cover">
+                        <div class="discount-badge absolute top-4 right-4 bg-sage text-white px-4 py-2 rounded-full font-semibold text-sm">
+                            $100 OFF
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center gap-2 text-sage text-sm mb-3">
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1118 0z"/>
+                                <circle cx="12" cy="10" r="3"/>
+                            </svg>
+                            Global
+                        </div>
+                        <h3 class="font-serif text-xl text-espresso mb-2">Emirates Airlines</h3>
+                        <p class="text-warmgray text-sm mb-4">$100 off on bookings over $800. Use code EMBK100</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-warmgray bg-cream px-3 py-1 rounded-full">Valid till Jun 2026</span>
+                            <button class="text-sage font-medium text-sm flex items-center gap-1 hover:gap-2 transition-all">
+                                Get Deal
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="reveal card-hover bg-white rounded-4xl overflow-hidden shadow-lg shadow-black/5 ring-1 ring-black/5" style="transition-delay: 0.2s;">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=600&q=80" alt="Luxury hotel" class="w-full aspect-[16/10] object-cover">
+                        <div class="discount-badge absolute top-4 right-4 bg-gold text-white px-4 py-2 rounded-full font-semibold text-sm">
+                            25% OFF
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center gap-2 text-sage text-sm mb-3">
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1118 0z"/>
+                                <circle cx="12" cy="10" r="3"/>
+                            </svg>
+                            Japan
+                        </div>
+                        <h3 class="font-serif text-xl text-espresso mb-2">Park Hyatt Tokyo</h3>
+                        <p class="text-warmgray text-sm mb-4">25% off for stays of 3+ nights. Includes breakfast credit</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-warmgray bg-cream px-3 py-1 rounded-full">Valid till Mar 2027</span>
+                            <button class="text-sage font-medium text-sm flex items-center gap-1 hover:gap-2 transition-all">
+                                Get Deal
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="reveal card-hover bg-white rounded-4xl overflow-hidden shadow-lg shadow-black/5 ring-1 ring-black/5">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=600&q=80" alt="Restaurant" class="w-full aspect-[16/10] object-cover">
+                        <div class="discount-badge absolute top-4 right-4 bg-gold text-white px-4 py-2 rounded-full font-semibold text-sm">
+                            30% OFF
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center gap-2 text-sage text-sm mb-3">
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1118 0z"/>
+                                <circle cx="12" cy="10" r="3"/>
+                            </svg>
+                            Italy
+                        </div>
+                        <h3 class="font-serif text-xl text-espresso mb-2">Michelin Dining Experience</h3>
+                        <p class="text-warmgray text-sm mb-4">30% off at partnered Michelin-starred restaurants</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-warmgray bg-cream px-3 py-1 rounded-full">Valid till Dec 2026</span>
+                            <button class="text-sage font-medium text-sm flex items-center gap-1 hover:gap-2 transition-all">
+                                Get Deal
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="reveal card-hover bg-white rounded-4xl overflow-hidden shadow-lg shadow-black/5 ring-1 ring-black/5" style="transition-delay: 0.1s;">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=600&q=80" alt="Swiss Alps" class="w-full aspect-[16/10] object-cover">
+                        <div class="discount-badge absolute top-4 right-4 bg-sage text-white px-4 py-2 rounded-full font-semibold text-sm">
+                            15% OFF
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center gap-2 text-sage text-sm mb-3">
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1118 0z"/>
+                                <circle cx="12" cy="10" r="3"/>
+                            </svg>
+                            Switzerland
+                        </div>
+                        <h3 class="font-serif text-xl text-espresso mb-2">Swiss Rail Pass</h3>
+                        <p class="text-warmgray text-sm mb-4">15% off on 8-day Swiss Travel Pass. Unlimited travel</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-warmgray bg-cream px-3 py-1 rounded-full">Valid till Dec 2026</span>
+                            <button class="text-sage font-medium text-sm flex items-center gap-1 hover:gap-2 transition-all">
+                                Get Deal
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="reveal card-hover bg-white rounded-4xl overflow-hidden shadow-lg shadow-black/5 ring-1 ring-black/5" style="transition-delay: 0.2s;">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1533591380348-14193909c5e7?w=600&q=80" alt="Travel gear" class="w-full aspect-[16/10] object-cover">
+                        <div class="discount-badge absolute top-4 right-4 bg-gold text-white px-4 py-2 rounded-full font-semibold text-sm">
+                            FREE
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center gap-2 text-sage text-sm mb-3">
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1118 0z"/>
+                                <circle cx="12" cy="10" r="3"/>
+                            </svg>
+                            Global
+                        </div>
+                        <h3 class="font-serif text-xl text-espresso mb-2">Travel Insurance</h3>
+                        <p class="text-warmgray text-sm mb-4">Free travel insurance with any booking over $500</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-warmgray bg-cream px-3 py-1 rounded-full">Ongoing</span>
+                            <button class="text-sage font-medium text-sm flex items-center gap-1 hover:gap-2 transition-all">
+                                Get Deal
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-16 reveal">
+                <button class="btn-primary inline-flex items-center gap-3 border-2 border-sage text-sage px-8 py-4 rounded-full text-base font-medium hover:bg-sage hover:text-white transition-colors">
+                    View All Coupons
+                    <span class="btn-icon w-5 h-5 flex items-center justify-center transition-transform duration-300">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </span>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <section id="how-it-works" class="px-6 py-32 bg-sage-light">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-20 reveal">
+                <span class="inline-block bg-white text-sage text-xs font-medium uppercase tracking-[0.2em] px-4 py-2 rounded-full mb-6">
+                    Simple Process
+                </span>
+                <h2 class="font-serif text-4xl md:text-5xl text-espresso">
+                    How It Works
+                </h2>
+                <p class="text-warmgray text-lg mt-4 max-w-2xl mx-auto">
+                    Three simple steps to unlock exclusive travel savings
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8 relative">
+                <div class="hidden md:block absolute top-20 left-1/3 right-1/3 h-px bg-sage/20"></div>
+
+                <div class="reveal bg-white rounded-4xl p-10 text-center relative shadow-lg shadow-black/5 ring-1 ring-black/5">
+                    <div class="w-16 h-16 bg-sage text-white rounded-full flex items-center justify-center font-serif text-2xl mx-auto mb-8">
+                        1
+                    </div>
+                    <div class="feature-icon w-14 h-14 bg-sage-light rounded-2xl flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-7 h-7 text-sage" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <circle cx="11" cy="11" r="8"/>
+                            <path d="M21 21l-4.35-4.35"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-serif text-2xl text-espresso mb-4">Browse Coupons</h3>
+                    <p class="text-warmgray leading-relaxed">
+                        Explore our curated collection of exclusive travel deals across flights, hotels, and experiences worldwide.
+                    </p>
+                </div>
+
+                <div class="reveal bg-white rounded-4xl p-10 text-center relative shadow-lg shadow-black/5 ring-1 ring-black/5" style="transition-delay: 0.15s;">
+                    <div class="w-16 h-16 bg-sage text-white rounded-full flex items-center justify-center font-serif text-2xl mx-auto mb-8">
+                        2
+                    </div>
+                    <div class="feature-icon w-14 h-14 bg-sage-light rounded-2xl flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-7 h-7 text-sage" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M15 5l-1 1a4 4 0 01-6.9 3l-.3-.4a3 3 0 01-.1-4.2c.5-.5 1.4-.5 2 0l1 1"/>
+                            <path d="M8 12l-1 1a4 4 0 003 6.9l.4-.3a3 3 0 004.2.1c.5-.5.5-1.4 0-2l-1-1"/>
+                            <path d="M15 19l1 1a4 4 0 01-6.9-3l-.3.4a3 3 0 01-.1 4.2c.5.5 1.4.5 2 0l1-1"/>
+                            <path d="M8 12l1-1a4 4 0 00-3-6.9l-.4.3a3 3 0 00-4.2-.1c-.5.5-.5 1.4 0 2l1 1"/>
+                            <circle cx="12" cy="12" r="1"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-serif text-2xl text-espresso mb-4">Copy Code</h3>
+                    <p class="text-warmgray leading-relaxed">
+                        One click to copy the coupon code. No signup required, no hidden fees — just instant savings.
+                    </p>
+                </div>
+
+                <div class="reveal bg-white rounded-4xl p-10 text-center relative shadow-lg shadow-black/5 ring-1 ring-black/5" style="transition-delay: 0.3s;">
+                    <div class="w-16 h-16 bg-sage text-white rounded-full flex items-center justify-center font-serif text-2xl mx-auto mb-8">
+                        3
+                    </div>
+                    <div class="feature-icon w-14 h-14 bg-sage-light rounded-2xl flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-7 h-7 text-sage" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
+                            <path d="M9 12l2 2 4-4"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-serif text-2xl text-espresso mb-4">Save & Travel</h3>
+                    <p class="text-warmgray leading-relaxed">
+                        Apply the code at checkout on the partner site and watch your total drop. Travel for less.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="testimonials" class="px-6 py-32">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-20 reveal">
+                <span class="inline-block bg-sage-light text-sage text-xs font-medium uppercase tracking-[0.2em] px-4 py-2 rounded-full mb-6">
+                    Testimonials
+                </span>
+                <h2 class="font-serif text-4xl md:text-5xl text-espresso">
+                    Loved by Travelers
+                </h2>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="reveal card-hover bg-white rounded-4xl p-10 shadow-lg shadow-black/5 ring-1 ring-black/5">
+                    <div class="text-gold text-5xl font-serif mb-6">"</div>
+                    <p class="text-espresso text-lg leading-relaxed mb-8">
+                        Saved $340 on our honeymoon to Bali. The hotel discount was incredible — we upgraded to a private villa for the same price!
+                    </p>
+                    <div class="flex items-center gap-4">
+                        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&q=80" alt="Sarah" class="w-12 h-12 rounded-full object-cover">
+                        <div>
+                            <p class="font-medium text-espresso">Sarah Mitchell</p>
+                            <p class="text-warmgray text-sm">Bali, Indonesia</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="reveal card-hover bg-white rounded-4xl p-10 shadow-lg shadow-black/5 ring-1 ring-black/5" style="transition-delay: 0.1s;">
+                    <div class="text-gold text-5xl font-serif mb-6">"</div>
+                    <p class="text-espresso text-lg leading-relaxed mb-8">
+                        Used the Emirates code for our Europe trip. $100 off immediately. Such a simple way to save — I check for new coupons before every booking.
+                    </p>
+                    <div class="flex items-center gap-4">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=80" alt="Marcus" class="w-12 h-12 rounded-full object-cover">
+                        <div>
+                            <p class="font-medium text-espresso">Marcus Chen</p>
+                            <p class="text-warmgray text-sm">Paris, France</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="reveal card-hover bg-white rounded-4xl p-10 shadow-lg shadow-black/5 ring-1 ring-black/5" style="transition-delay: 0.2s;">
+                    <div class="text-gold text-5xl font-serif mb-6">"</div>
+                    <p class="text-espresso text-lg leading-relaxed mb-8">
+                        The Japan rail pass discount made our 2-week trip so much more affordable. Already planning my next adventure with TravelCoupons!
+                    </p>
+                    <div class="flex items-center gap-4">
+                        <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&q=80" alt="Emma" class="w-12 h-12 rounded-full object-cover">
+                        <div>
+                            <p class="font-medium text-espresso">Emma Thompson</p>
+                            <p class="text-warmgray text-sm">Tokyo, Japan</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="px-6 py-32">
+        <div class="max-w-7xl mx-auto">
+            <div class="reveal bg-sage rounded-4xl p-12 md:p-20 text-center relative overflow-hidden">
+                <div class="absolute inset-0 opacity-10">
+                    <img src="https://images.unsplash.com/photo-1488085061387-422e29b40080?w=1200&q=80" alt="Night sky" class="w-full h-full object-cover">
+                </div>
+                <div class="relative z-10">
+                    <h2 class="font-serif text-4xl md:text-5xl text-white mb-6">
+                        Ready to Start Saving?
+                    </h2>
+                    <p class="text-white/80 text-lg max-w-2xl mx-auto mb-10">
+                        Join 50,000+ travelers who save an average of $200 per trip with our exclusive coupons.
+                    </p>
+                    <button class="btn-primary inline-flex items-center gap-3 bg-white text-sage px-8 py-4 rounded-full text-base font-medium">
+                        Explore All Deals
+                        <span class="btn-icon w-5 h-5 flex items-center justify-center transition-transform duration-300">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M5 12h14M12 5l7 7-7 7"/>
+                            </svg>
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="px-6 py-16 bg-espresso">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid md:grid-cols-4 gap-12 mb-16">
+                <div class="md:col-span-2">
+                    <div class="flex items-center gap-2 mb-6">
+                        <svg class="w-8 h-8 text-sage" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M16 4L4 12l12 8 12-8-12-8z"/>
+                            <path d="M4 20l12 8 12-8"/>
+                            <path d="M4 16l12 8 12-8"/>
+                        </svg>
+                        <span class="font-serif text-xl text-white">TravelCoupons</span>
+                    </div>
+                    <p class="text-white/60 leading-relaxed max-w-md mb-6">
+                        Your go-to destination for exclusive travel coupons and deals. We partner with top brands to bring you savings on every journey.
+                    </p>
+                    <div class="flex gap-4">
+                        <a href="#" class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-sage transition-colors">
+                            <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-sage transition-colors">
+                            <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-sage transition-colors">
+                            <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-medium mb-4">Quick Links</h4>
+                    <ul class="space-y-3">
+                        <li><a href="#deals" class="text-white/60 hover:text-white transition-colors">All Deals</a></li>
+                        <li><a href="#how-it-works" class="text-white/60 hover:text-white transition-colors">How It Works</a></li>
+                        <li><a href="#" class="text-white/60 hover:text-white transition-colors">Partner With Us</a></li>
+                        <li><a href="#" class="text-white/60 hover:text-white transition-colors">About</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-medium mb-4">Categories</h4>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-white/60 hover:text-white transition-colors">Flights</a></li>
+                        <li><a href="#" class="text-white/60 hover:text-white transition-colors">Hotels</a></li>
+                        <li><a href="#" class="text-white/60 hover:text-white transition-colors">Experiences</a></li>
+                        <li><a href="#" class="text-white/60 hover:text-white transition-colors">Dining</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
+                <p class="text-white/40 text-sm">© 2026 TravelCoupons. All rights reserved.</p>
+                <div class="flex gap-6 text-sm">
+                    <a href="#" class="text-white/40 hover:text-white transition-colors">Privacy Policy</a>
+                    <a href="#" class="text-white/40 hover:text-white transition-colors">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const menuBtn = document.getElementById('menuBtn');
+            const mobileMenu = document.getElementById('mobileMenu');
+            let menuOpen = false;
+
+            menuBtn.addEventListener('click', () => {
+                menuOpen = !menuOpen;
+                menuBtn.classList.toggle('menu-open', menuOpen);
+                mobileMenu.classList.toggle('opacity-0', !menuOpen);
+                mobileMenu.classList.toggle('pointer-events-none', !menuOpen);
+            });
+
+            document.querySelectorAll('#mobileMenu a').forEach(link => {
+                link.addEventListener('click', () => {
+                    menuOpen = false;
+                    menuBtn.classList.remove('menu-open');
+                    mobileMenu.classList.add('opacity-0');
+                    mobileMenu.classList.add('pointer-events-none');
+                });
+            });
+
+            const reveals = document.querySelectorAll('.reveal');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            });
+
+            reveals.forEach(el => observer.observe(el));
+        });
+    </script>
+</body>
+</html>
